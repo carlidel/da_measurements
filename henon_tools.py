@@ -5,6 +5,29 @@ import gpu_henon_core as gpu
 import cpu_henon_core as cpu
 
 
+def modulation(epsilon, n_elements):
+    coefficients = np.array([1.000e-4,
+                             0.218e-4,
+                             0.708e-4,
+                             0.254e-4,
+                             0.100e-4,
+                             0.078e-4,
+                             0.218e-4])
+    modulations = np.array([1 * (2 * np.pi / 868.12),
+                            2 * (2 * np.pi / 868.12),
+                            3 * (2 * np.pi / 868.12),
+                            6 * (2 * np.pi / 868.12),
+                            7 * (2 * np.pi / 868.12),
+                            10 * (2 * np.pi / 868.12),
+                            12 * (2 * np.pi / 868.12)])
+    omega_sum = np.array([
+        np.sum(coefficients * np.cos(modulations * k)) for k in range(n_elements)
+    ])
+    omega_x = 0.168 * 2 * np.pi * (1 + epsilon * omega_sum)
+    omega_y = 0.201 * 2 * np.pi * (1 + epsilon * omega_sum)
+    return omega_x, omega_y
+
+
 class gpu_radial_scan(object):
     def __init__(self, dr, alpha, theta1, theta2, epsilon):
         """init an henon optimized radial tracker!
@@ -78,26 +101,7 @@ class gpu_radial_scan(object):
         for i in range(1, len(sample_list)):
             assert sample_list[i] <= sample_list[i - 1]
 
-        # Modulation
-        coefficients = np.array([1.000e-4,
-                                 0.218e-4,
-                                 0.708e-4,
-                                 0.254e-4,
-                                 0.100e-4,
-                                 0.078e-4,
-                                 0.218e-4])
-        modulations = np.array([1 * (2 * np.pi / 868.12),
-                                2 * (2 * np.pi / 868.12),
-                                3 * (2 * np.pi / 868.12),
-                                6 * (2 * np.pi / 868.12),
-                                7 * (2 * np.pi / 868.12),
-                                10 * (2 * np.pi / 868.12),
-                                12 * (2 * np.pi / 868.12)])
-        omega_sum = np.array([
-            np.sum(coefficients * np.cos(modulations * k)) for k in range(sample_list[0])
-        ])
-        omega_x = 0.168 * 2 * np.pi * (1 + self.epsilon * omega_sum)
-        omega_y = 0.201 * 2 * np.pi * (1 + self.epsilon * omega_sum)
+        omega_x, omega_y = modulation(self.epsilon, sample_list[0])
 
         d_omega_x = cuda.to_device(omega_x)
         d_omega_y = cuda.to_device(omega_y)
@@ -112,7 +116,7 @@ class gpu_radial_scan(object):
             self.d_step.copy_to_host(self.step)
             self.container.append(self.step.copy())
 
-        return np.asarray(self.container)
+        return np.asarray(self.container) * self.dr
     
     def dummy_compute(self, sample_list):
         """performs a dummy computation
@@ -145,7 +149,7 @@ class gpu_radial_scan(object):
         ndarray
             the data
         """
-        return np.asarray(self.container)
+        return np.asarray(self.container) * self.dr
 
 
 
@@ -208,26 +212,7 @@ class cpu_radial_scan(object):
         for i in range(1, len(sample_list)):
             assert sample_list[i] <= sample_list[i - 1]
 
-        # Modulation
-        coefficients = np.array([1.000e-4,
-                                 0.218e-4,
-                                 0.708e-4,
-                                 0.254e-4,
-                                 0.100e-4,
-                                 0.078e-4,
-                                 0.218e-4])
-        modulations = np.array([1 * (2 * np.pi / 868.12),
-                                2 * (2 * np.pi / 868.12),
-                                3 * (2 * np.pi / 868.12),
-                                6 * (2 * np.pi / 868.12),
-                                7 * (2 * np.pi / 868.12),
-                                10 * (2 * np.pi / 868.12),
-                                12 * (2 * np.pi / 868.12)])
-        omega_sum = np.array([
-            np.sum(coefficients * np.cos(modulations * k)) for k in range(sample_list[0])
-        ])
-        omega_x = 0.168 * 2 * np.pi * (1 + self.epsilon * omega_sum)
-        omega_y = 0.201 * 2 * np.pi * (1 + self.epsilon * omega_sum)
+        omega_x, omega_y = modulation(self.epsilon, sample_list[0])
 
         # Execution
         for sample in sample_list:
@@ -237,7 +222,7 @@ class cpu_radial_scan(object):
                 sample, omega_x, omega_y)
             self.container.append(self.step.copy())
 
-        return np.asarray(self.container)
+        return np.asarray(self.container) * self.dr
 
     def dummy_compute(self, sample_list):
         """performs a dummy computation
@@ -267,7 +252,7 @@ class cpu_radial_scan(object):
         ndarray
             the data
         """
-        return np.asarray(self.container)
+        return np.asarray(self.container) * self.dr
 
 
 def cartesian_to_polar_4d(x, y, px, py):
