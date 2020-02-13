@@ -13,7 +13,6 @@ import math
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import pandas as pd
 import scipy.integrate as integrate
 from tqdm import tqdm
 from tqdm import tnrange
