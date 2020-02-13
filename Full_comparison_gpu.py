@@ -98,7 +98,6 @@ for epsilon in tqdm(epsilons):
                 )
             )
         DA_1[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving data
@@ -160,7 +159,6 @@ for epsilon in tqdm(epsilons):
                 )
             )
         DA_2[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving Data
@@ -196,7 +194,6 @@ for epsilon in epsilons:
         # Computing DA
         DA = np.power(integrate.simps(np.power(radiuses, 2), alpha_values, axis=0) / (np.pi * 0.5), 0.5)
         DA_3[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving data
@@ -259,7 +256,6 @@ for epsilon in tqdm(epsilons):
         # Computing DA
         DA = np.power(np.average(np.power(radiuses, 4), axis=0), 1/4)
         DA_4[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving data
