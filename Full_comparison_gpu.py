@@ -5,7 +5,7 @@
 # Based on M. Giovannozzi notes of January 9, 2020
 # ### Library setup
 
-# In[2]:
+# In[1]:
 
 
 # Base libraries
@@ -20,8 +20,6 @@ from scipy.special import erf
 import pickle
 import itertools
 
-# from IPython.display import clear_output
-
 # Personal libraries
 import henon_tools as hm
 
@@ -35,10 +33,10 @@ matplotlib.rcParams['savefig.dpi'] = 300
 # ## Generating the data
 # ### Setting up Hènon parameters
 
-# In[3]:
+# In[2]:
 
 
-epsilons = [8.0, 16.0, 32.0]
+epsilons = [8.0]#, 16.0, 32.0]
 n_turns = 10 ** 6
 
 turn_sampling = np.linspace(100, n_turns, 100, dtype=np.int_)[::-1]
@@ -52,7 +50,7 @@ with open("full_data/setup.pkl", 'wb') as f:
 
 # ## 1.1 Direct integration
 
-# In[6]:
+# In[3]:
 
 
 data_1 = {}
@@ -98,12 +96,11 @@ for epsilon in tqdm(epsilons):
                 )
             )
         DA_1[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving data
 
-# In[7]:
+# In[4]:
 
 
 with open("full_data/raw_data_1.pkl", 'wb') as f:
@@ -115,7 +112,7 @@ with open("full_data/DA_1.pkl", 'wb') as f:
 
 # ## 1.2 Direct integration (with fixed coordinate sampling!)
 
-# In[9]:
+# In[5]:
 
 
 data_2 = {}
@@ -160,12 +157,11 @@ for epsilon in tqdm(epsilons):
                 )
             )
         DA_2[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving Data
 
-# In[10]:
+# In[6]:
 
 
 with open("full_data/raw_data_2.pkl", 'wb') as f:
@@ -177,7 +173,7 @@ with open("full_data/DA_2.pkl", 'wb') as f:
 
 # ## 1.3 2D scan
 
-# In[11]:
+# In[24]:
 
 
 data_3 = {}
@@ -196,12 +192,11 @@ for epsilon in epsilons:
         # Computing DA
         DA = np.power(integrate.simps(np.power(radiuses, 2), alpha_values, axis=0) / (np.pi * 0.5), 0.5)
         DA_3[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving data
 
-# In[12]:
+# In[11]:
 
 
 with open("full_data/raw_data_3.pkl", 'wb') as f:
@@ -215,7 +210,7 @@ with open("full_data/DA_3.pkl", 'wb') as f:
 
 # ### Uniform hypersphere point picking
 
-# In[13]:
+# In[12]:
 
 
 def unif_4d_sphere_point_picking():
@@ -259,7 +254,6 @@ for epsilon in tqdm(epsilons):
         # Computing DA
         DA = np.power(np.average(np.power(radiuses, 4), axis=0), 1/4)
         DA_4[(epsilon, fineness)] = np.asarray(DA)
-    clear_output()
 
 
 # ### Saving data
@@ -276,7 +270,7 @@ with open("full_data/DA_4.pkl", 'wb') as f:
 
 # ## Loading data (if necessary)
 
-# In[ ]:
+# In[16]:
 
 
 with open("full_data/setup.pkl", 'rb') as f:
@@ -298,7 +292,7 @@ with open("full_data/DA_4.pkl", 'rb') as f:
 # ## Plotting 📈📉📊
 # setting up the colors!
 
-# In[16]:
+# In[17]:
 
 
 color = ["C0", "C1", "C2", "C3", "C4", "C5"]
@@ -306,7 +300,7 @@ color = ["C0", "C1", "C2", "C3", "C4", "C5"]
 
 # ### A simple comparison
 
-# In[17]:
+# In[23]:
 
 
 epsilon = epsilons[-1]

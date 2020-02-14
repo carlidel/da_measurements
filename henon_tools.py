@@ -116,7 +116,7 @@ class gpu_radial_scan(object):
             self.d_step.copy_to_host(self.step)
             self.container.append(self.step.copy())
 
-        return np.asarray(self.container) * self.dr
+        return np.transpose(np.asarray(self.container)) * self.dr
     
     def dummy_compute(self, sample_list):
         """performs a dummy computation
@@ -139,7 +139,7 @@ class gpu_radial_scan(object):
             self.d_step.copy_to_host(self.step)
             self.container.append(self.step.copy())
 
-        return np.asarray(self.container)
+        return np.transpose(np.asarray(self.container))
 
     def get_data(self):
         """Get the data
@@ -149,7 +149,7 @@ class gpu_radial_scan(object):
         ndarray
             the data
         """
-        return np.asarray(self.container) * self.dr
+        return np.transpose(np.asarray(self.container)) * self.dr
 
 
 
@@ -222,7 +222,7 @@ class cpu_radial_scan(object):
                 sample, omega_x, omega_y)
             self.container.append(self.step.copy())
 
-        return np.asarray(self.container) * self.dr
+        return np.transpose(np.asarray(self.container)) * self.dr
 
     def dummy_compute(self, sample_list):
         """performs a dummy computation
@@ -242,7 +242,7 @@ class cpu_radial_scan(object):
             self.step = cpu.dummy_map(self.step, sample)
             self.container.append(self.step.copy())
 
-        return np.asarray(self.container)
+        return np.transpose(np.asarray(self.container))
 
     def get_data(self):
         """Get the data
@@ -252,7 +252,7 @@ class cpu_radial_scan(object):
         ndarray
             the data
         """
-        return np.asarray(self.container) * self.dr
+        return np.transpose(np.asarray(self.container)) * self.dr
 
 
 def cartesian_to_polar_4d(x, y, px, py):
