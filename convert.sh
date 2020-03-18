@@ -1,2 +1,2 @@
 #!/bin/bash
-jupyter nbconvert --to script Full_comparison_gpu.ipynb
+jupyter nbconvert --to script comparison.ipynb

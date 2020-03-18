@@ -2,7 +2,13 @@
 python -m virtualenv myvenv
 source myvenv/bin/activate
 pip install numba matplotlib scipy tqdm
-mkdir full_data
+
+git clone https://github.com/carlidel/c_henon_map.git
+cd c_henon_map
+pip install .
+cd ..
+
+mkdir data
 mkdir img
-python Full_comparison_gpu.py
-tar -czf data.tar.gz ./img ./full_data
+python comparison.py
+tar -czf data.tar.gz ./img ./data
