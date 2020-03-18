@@ -1,7 +1,7 @@
 #!/bin/bash
 python -m virtualenv myvenv
 source myvenv/bin/activate
-pip install numba matplotlib scipy tqdm
+pip install numba matplotlib scipy tqdm SALib tikzplotlib
 
 git clone https://github.com/carlidel/c_henon_map.git
 cd c_henon_map
