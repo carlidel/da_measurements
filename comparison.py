@@ -687,7 +687,7 @@ plt.figure(figsize=(4, 3))
 elements = np.linspace(0,1,len(DA_4))
 for i, label in enumerate(sorted(DA_4, key=lambda a: a[1])):
     if label[0] == epsilon:
-        plt.errorbar(turn_sampling, DA_4[label], variance_4[label], c=cmap(elements[i]), label=str(label[1]), linewidth=0.6, elinewidth=0.6https://www.anaconda.com/distribution/#download-section)
+        plt.errorbar(turn_sampling, DA_4[label], variance_4[label], c=cmap(elements[i]), label=str(label[1]), linewidth=0.6, elinewidth=0.6)
 
 plt.xlabel("N turns")
 plt.ylabel("DA")
