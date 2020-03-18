@@ -666,7 +666,8 @@ plt.figure(figsize=(4, 3))
 plt.errorbar(turn_sampling, DA_b[epsilon], yerr=error_b[epsilon], c="black", linewidth=0.5, elinewidth=0.5, label="Baseline")
 
 label = sorted(filter(lambda x: x[0] == epsilon, DA_4), key=lambda a: a[1])[-1]
-plt.errorbar(turn_sampling, DA_4[label], yerr=variance_4[label], label="Stratified Monte Carlo"https://www.anaconda.com/distribution/#download-sectionhttps://www.anaconda.com/distribution/#download-section)
+
+plt.errorbar(turn_sampling, DA_4[label], yerr=variance_4[label], label="Stratified Monte Carlo")
 
 #plt.title("Comparison with Stratified Monte Carlo")
 plt.xlabel("N turns")
