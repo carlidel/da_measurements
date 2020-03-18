@@ -39,7 +39,7 @@ matplotlib.rcParams['savefig.dpi'] = 300
 epsilons = [16.0]#, 16.0, 32.0]
 
 min_turns = 10 ** 2
-max_turns = 10 ** 5
+max_turns = 10 ** 6
 n_turn_samples = 100
 
 turn_sampling = np.linspace(min_turns, max_turns, n_turn_samples, dtype=np.int_)[::-1]
