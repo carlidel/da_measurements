@@ -3,7 +3,7 @@
 
 # ## Import Libraries
 
-# In[1]:
+# In[4]:
 
 
 # Base libraries
@@ -33,13 +33,13 @@ matplotlib.rcParams['savefig.dpi'] = 300
 
 # ## Setup
 
-# In[2]:
+# In[6]:
 
 
 epsilons = [16.0]#, 16.0, 32.0]
 
-min_turns = 10 ** 2
-max_turns = 10 ** 6
+min_turns = 10 ** 1
+max_turns = 10 ** 3
 n_turn_samples = 100
 
 turn_sampling = np.linspace(min_turns, max_turns, n_turn_samples, dtype=np.int_)[::-1]
@@ -98,7 +98,7 @@ theta2_flat = theta2_mesh.flatten()
 # In[6]:
 
 
-for epsilon in epsilons:
+for epsilon in tqdm(epsilons, desc="Baseline"):
     
     # Data generation
     henon_engine = hm.radial_scan.generate_instance(d_r, alpha_flat, theta1_flat, theta2_flat, epsilon)
@@ -183,7 +183,7 @@ with open("data/error_b.pkl", 'rb') as f:
 
 DA_1 = {}
 error_1 = {}
-for epsilon in epsilons:
+for epsilon in tqdm(epsilons, desc="Standard Integral"):
     base_radiuses = data_b[epsilon]
     
     for i in [2, 4, 8, 16, 32]:
@@ -253,7 +253,7 @@ with open("data/error_1.pkl", 'rb') as f:
 
 # ## Radial average
 
-# In[12]:
+# In[20]:
 
 
 DA_2 = {}
@@ -267,7 +267,7 @@ alpha_preliminary_values = np.linspace(-1.0, 1.0, samples)
 alpha_values = np.arccos(alpha_preliminary_values) / 2
 d_preliminar_alpha = alpha_preliminary_values[1] - alpha_preliminary_values[0]
 
-for epsilon in epsilons:
+for epsilon in tqdm(epsilons, desc="Radial average"):
     # Extracting the radiuses with theta1 = theta2 = 0.0
     
     preliminar_engine = hm.radial_scan.generate_instance(
@@ -280,20 +280,28 @@ for epsilon in epsilons:
     all_radiuses = preliminar_engine.compute(turn_sampling)
     
     values = []
-    for i in range(len(turn_sampling)):
-        radiuses = all_radiuses[:, i]
+    for i in tqdm(range(len(turn_sampling))):
+        temp_values = np.array([[]])
+        for index, j in enumerate(range(0, samples, 128)):
+            stopping = (j + 128 if j != samples - 1 else samples)
+            radiuses = all_radiuses[j : stopping, i]
+
+            engine = hm.full_track.generate_instance(
+                radiuses,
+                alpha_values[j : stopping],
+                np.zeros(alpha_values.shape)[j : stopping],
+                np.zeros(alpha_values.shape)[j : stopping],
+                np.ones(alpha_values.shape, dtype=np.int)[j : stopping] * turn_sampling[i],
+                epsilon)
+
+            x, y, px, py = engine.compute()
+            temp = engine.accumulate_and_return(n_subdivisions)
+            if index == 0:
+                temp_values = temp
+            else:
+                temp_values = np.concatenate((temp_values, temp))
         
-        engine = hm.full_track.generate_instance(
-            radiuses,
-            alpha_values,
-            np.zeros(alpha_values.shape),
-            np.zeros(alpha_values.shape),
-            np.ones(alpha_values.shape, dtype=np.int) * turn_sampling[i],
-            epsilon)
-        
-        x, y, px, py = engine.compute()
-        
-        values.append(engine.accumulate_and_return(n_subdivisions))
+        values.append(temp_values)
     
     for jump in [1, 2, 4, 8, 16, 32]:
         DA = []
@@ -322,7 +330,7 @@ plt.legend()
 plt.tight_layout()
 plt.xlabel("N iterations")
 plt.ylabel("$r$")
-plt.savefig("img/radial_example.png", dpi=600)
+plt.savefig("img/radial_example_scatter.png", dpi=600)
 #plt.xlim(0,200)
 
 
@@ -388,7 +396,7 @@ theta2 = np.array([p[2] for p in param_values])
 DA_3 = {}
 variance_3 = {}
 data_3 = {}
-for epsilon in epsilons:
+for epsilon in tqdm(epsilons, desc="Monte Carlo"):
     # Data generation
     henon_engine = hm.radial_scan.generate_instance(d_r, alpha, theta1, theta2, epsilon)
     radiuses = henon_engine.compute(turn_sampling)
@@ -440,11 +448,11 @@ DA_4 = {}
 variance_4 = {}
 
 mc_max_samples = 33 ** 3
-mc_samples = np.linspace(0, mc_max_samples, 16, dtype=np.int)[1:]
+mc_samples = np.linspace(0, mc_max_samples, 21, dtype=np.int)[1:]
 d_samples = mc_samples[1] - mc_samples[0]
 n_sectors = 5
 
-for epsilon in epsilons:
+for epsilon in tqdm(epsilons, desc="Stratified Monte Carlo"):
     engine = stratified_mc(n_sectors, mc_max_samples, turn_sampling, d_r, epsilon)
     for iters in mc_samples:
         engine.compute(1, d_samples)
@@ -491,7 +499,7 @@ alpha_max_samples = 33 ** 3
 
 alpha_values = np.linspace(0, np.pi * 0.5, alpha_max_samples)
 
-for epsilon in epsilons:
+for epsilon in tqdm(epsilons, desc="2D scan"):
     henon_engine = hm.radial_scan.generate_instance(d_r, alpha_values, np.zeros(alpha_values.shape), np.zeros(alpha_values.shape), epsilon)
     radiuses = henon_engine.compute(turn_sampling)
     data_5[(epsilon)] = radiuses
