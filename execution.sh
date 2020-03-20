@@ -1,14 +1,15 @@
 #!/bin/bash
-python -m virtualenv myvenv
+scl enable devtoolset-8 bash
+python3 -m venv myvenv
 source myvenv/bin/activate
-pip install numba matplotlib scipy tqdm SALib tikzplotlib
+pip3 install numba matplotlib scipy tqdm SALib tikzplotlib
 
 git clone https://github.com/carlidel/c_henon_map.git
 cd c_henon_map
-pip install .
+pip3 install .
 cd ..
 
 mkdir data
 mkdir img
-python comparison.py
-tar -czf data.tar.gz ./img ./data
+python3 comparison.py
+tar -czvf data.tar.gz img data
