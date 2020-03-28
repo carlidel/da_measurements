@@ -47,7 +47,7 @@ class sector(object):
         alpha = (np.arccos(extraction[:, 0]) / 2)
         
         engine = hm.radial_scan.generate_instance(
-            self.dr, alpha, extraction[:, 1], extraction[:, 2], self.epsilon)
+            self.dr, alpha, extraction[:, 1], extraction[:, 2], self.epsilon, cuda_device=False)
         radiuses = engine.compute(self.scanning_list)
 
         if self.data.size == 0:
@@ -78,6 +78,7 @@ class sector(object):
 
 class stratified_mc(object):
     def __init__(self, n_sectors, max_iters, scanning_list, dr, epsilon):
+        print("Initialization...")
         self.max_iters = max_iters
         self.n_sectors = n_sectors
         self.total_sectors = n_sectors ** 3
@@ -102,20 +103,37 @@ class stratified_mc(object):
         self.averages = np.zeros((n_sectors, n_sectors, n_sectors, len(scanning_list)))
         self.variances = np.zeros((n_sectors, n_sectors, n_sectors, len(scanning_list)))
         self.indices = np.zeros((n_sectors, n_sectors, n_sectors))
-
-    def compute(self, n_iterations, total_samples):
-        sample_per_iteration = total_samples // n_iterations
-        last_iteration = total_samples % n_iterations
         
-        for i in tqdm(range(n_iterations)):
-            self.p /= np.sum(self.p)
-            items = np.asarray(np.around(self.p), dtype=np.int)
-            for a in range(self.n_sectors):
-                for b in range(self.n_sectors):
-                    for c in range(self.n_sectors):
-                        self.sectors[a][b][c].extract(
-                            sample_per_iteration if i == n_iterations - 1 else last_iteration
-                        )
+
+        print("...first computation...")
+        for a in tqdm(range(self.n_sectors)):
+            for b in range(self.n_sectors):
+                for c in range(self.n_sectors):
+                    self.sectors[a][b][c].extract(10)
+                    self.p[a,b,c] = np.sqrt(self.sectors[a][b][c].get_first_variance())
+                    self.variances[a,b,c] = self.sectors[a][b][c].get_variance()
+                    self.averages[a,b,c] = self.sectors[a][b][c].get_average()
+                    self.indices[a,b,c] = self.sectors[a][b][c].get_index()
+        
+        print("...done initializing.")
+                        
+        
+
+    def compute(self, samples):
+        self.p /= np.sum(self.p)
+        items = np.asarray(np.rint(self.p * samples), dtype=np.int)
+        if np.sum(items) < samples:
+            difference = samples - np.sum(items)
+            items = items.flatten()
+            while difference != 0:
+                items[np.random.choice(range(len(items)))] += 1
+                difference -= 1
+            items = items.reshape(self.n_sectors, self.n_sectors, self.n_sectors)
+        for a in range(self.n_sectors):
+            for b in range(self.n_sectors):
+                for c in range(self.n_sectors):
+                    if items[a,b,c] > 0:
+                        self.sectors[a][b][c].extract(items[a,b,c])
                         self.p[a,b,c] = np.sqrt(self.sectors[a][b][c].get_first_variance())
                         self.variances[a,b,c] = self.sectors[a][b][c].get_variance()
                         self.averages[a,b,c] = self.sectors[a][b][c].get_average()
