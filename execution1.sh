@@ -10,5 +10,5 @@ cd ..
 
 mkdir data
 mkdir img
-python3 script1.py
+python3 part1.py
 tar -czvf data1.tar.gz img data
