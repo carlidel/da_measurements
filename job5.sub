@@ -5,9 +5,9 @@ error                   = test.$(ClusterId).$(ProcId).err
 log                     = test.$(ClusterId).log
 should_transfer_files   = YES
 transfer_input_files    = ./part5.py, ./stratified_mc.py,  ./parameters.py  
-transfer_output_files   = data5.tar.gz, data/DA_5.pkl, data/uncertainty_5.pkl
+transfer_output_files   = data5.tar.gz
 when_to_transfer_output = ON_EXIT
-+JobFlavour = "testmatch"
++JobFlavour = "tomorrow"
 request_GPUs = 1
 request_CPUs = 1
 queue
