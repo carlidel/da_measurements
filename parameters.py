@@ -15,7 +15,7 @@ baseline_samples = 129
 baseline_total_samples = baseline_samples ** 3
 
 # RADIAL AVERAGE COMPUTING
-n_subdivisions = 15
+n_subdivisions = 64
 samples = 8193
 
 # MONTE CARLO
