@@ -19,7 +19,7 @@ baseline_samples = 129
 baseline_total_samples = baseline_samples ** 3
 
 # RADIAL AVERAGE COMPUTING
-n_subdivisions = 128
+n_subdivisions = 64
 samples = 8193
 
 # MONTE CARLO
@@ -27,8 +27,7 @@ mc_max_samples = 5 * 10 ** 4
 mc_min_samples = 10 ** 1
 mc_samples = np.linspace(mc_min_samples, mc_max_samples, 1000, dtype=np.int)
 
-# STRATIFIED MONTE CARLOif os.path.exists("demofile.txt"):
-  os.remove("demofile.txt")
+# STRATIFIED MONTE CARLO
 mcs_max_samples = 5 * 10 ** 4
 mcs_samples = np.linspace(0, mcs_max_samples, 101, dtype=np.int)[1:]
 mcs_n_sectors = 5
