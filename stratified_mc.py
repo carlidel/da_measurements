@@ -39,6 +39,7 @@ class sector(object):
         self.data = np.array([])
         self.average = np.nan
         self.variance = np.nan
+        self.starting_position = starting_position
 
     def extract(self, n_extractions):
         extraction = self.noise_list[self.index : self.index + n_extractions, :]
@@ -47,7 +48,7 @@ class sector(object):
         alpha = (np.arccos(extraction[:, 0]) / 2)
         
         engine = hm.radial_scan.generate_instance(
-            self.dr, alpha, extraction[:, 1], extraction[:, 2], self.epsilon, starting_position=starting_position, cuda_device=False)
+            self.dr, alpha, extraction[:, 1], extraction[:, 2], self.epsilon, starting_position=self.starting_position, cuda_device=False)
         radiuses = engine.compute(self.scanning_list)
 
         if self.data.size == 0:
