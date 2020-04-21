@@ -21,7 +21,7 @@ import henon_map as hm
 
 
 class sector(object):
-    def __init__(self, minimums, maximums, max_iters, scanning_list, dr, epsilon):
+    def __init__(self, minimums, maximums, max_iters, scanning_list, dr, epsilon, starting_position):
         self.scanning_list = scanning_list
         self.dr = dr
         self.epsilon = epsilon
@@ -47,7 +47,7 @@ class sector(object):
         alpha = (np.arccos(extraction[:, 0]) / 2)
         
         engine = hm.radial_scan.generate_instance(
-            self.dr, alpha, extraction[:, 1], extraction[:, 2], self.epsilon, cuda_device=False)
+            self.dr, alpha, extraction[:, 1], extraction[:, 2], self.epsilon, starting_position=starting_position, cuda_device=False)
         radiuses = engine.compute(self.scanning_list)
 
         if self.data.size == 0:
@@ -77,7 +77,7 @@ class sector(object):
 
 
 class stratified_mc(object):
-    def __init__(self, n_sectors, max_iters, scanning_list, dr, epsilon):
+    def __init__(self, n_sectors, max_iters, scanning_list, dr, epsilon, starting_position):
         print("Initialization...")
         self.max_iters = max_iters
         self.n_sectors = n_sectors
@@ -93,7 +93,7 @@ class stratified_mc(object):
                     self.theta2_sectors[c]],
                 [self.alpha_sectors[a+1], self.theta1_sectors[b+1],
                     self.theta2_sectors[c+1]],
-                self.max_iters, scanning_list, dr, epsilon
+                self.max_iters, scanning_list, dr, epsilon, starting_position
             )
         for c in range(n_sectors)]
         for b in range(n_sectors)]
