@@ -110,7 +110,7 @@ class stratified_mc(object):
         for a in tqdm(range(self.n_sectors)):
             for b in range(self.n_sectors):
                 for c in range(self.n_sectors):
-                    self.sectors[a][b][c].extract(10)
+                    self.sectors[a][b][c].extract(3)
                     self.p[a,b,c] = np.sqrt(self.sectors[a][b][c].get_first_variance())
                     self.variances[a,b,c] = self.sectors[a][b][c].get_variance()
                     self.averages[a,b,c] = self.sectors[a][b][c].get_average()
