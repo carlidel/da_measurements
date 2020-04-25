@@ -11,4 +11,3 @@ cd ..
 mkdir data
 mkdir img
 python3 part2.py
-tar -czvf data2.tar.gz img/*
